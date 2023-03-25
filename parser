@@ -1,0 +1,76 @@
+import requests
+from bs4 import BeautifulSoup
+import csv
+from transliterate import slugify
+import csv
+
+
+# Функция возвращает html-код страниц
+def get_html(url):
+    headers = {
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 YaBrowser/23.1.5.751 Yowser/2.5 Safari/537.36'
+    }
+    response = requests.get(url, headers=headers)
+    return response.text
+
+
+# Функция возвращает кол-во страниц
+def get_total_pages(html):
+    soup = BeautifulSoup(html, 'lxml')
+    total_pages = soup.find('div', class_="pagination-root-Ntd_O").find_all('span', class_='pagination-item-JJq_j')[-2].text
+    return int(total_pages)
+
+
+# Функция формирования URL
+def main(product, url_reg):
+    base_url = 'https://www.avito.ru/' + url_reg + '?q=' + product
+    total_pages = get_total_pages(get_html(base_url))
+    all_url = []
+    for i in range(1, total_pages):
+        all_url.append('https://www.avito.ru/' + url_reg + '?p=' + str(i) + '&q=' + product)
+    parse_all_page(all_url)
+
+
+def parse_all_page(all_url):
+    for i in all_url:
+        soup = BeautifulSoup(get_html(i), 'lxml')
+        parse(soup)
+
+
+def parse(soup):
+    all_product_name = soup.find_all('h3', class_='title-root-zZCwT iva-item-title-py3i_ title-listRedesign-_rejR title-root_maxHeight-X6PsH text-text-LurtD text-size-s-BxGpL text-bold-SinUO')
+    all_price = soup.find_all('span', class_='price-text-_YGDY text-text-LurtD text-size-s-BxGpL')
+    all_link = soup.find_all('a', class_='iva-item-sliderLink-uLz1v')
+
+    for one_product in all_product_name:
+        name.append(one_product.text)
+
+    for one_price in all_price:
+        price.append(one_price.text.replace('\xa0', '').replace('₽', ''))
+
+    for one_link in all_link:
+        link.append('https://www.avito.ru' + one_link['href'])
+
+
+region = 'Москва'
+url_reg = slugify(region)
+product = 'фен'
+name = []
+price = []
+link = []
+
+
+main(product, url_reg)
+
+
+with open('avito.csv', 'w') as f:
+    writer = csv.writer(f)
+    for i in range(1, len(name)):
+        writer.writerow(name[i])
+        writer.writerow(price[i])
+        writer.writerow(link[i])
+
+
+
+
