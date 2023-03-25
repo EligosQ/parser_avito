@@ -52,10 +52,13 @@ def parse(soup):
     for one_link in all_link:
         link.append('https://www.avito.ru' + one_link['href'])
 
+# Название города
+region = ''
 
-region = 'Москва'
+# Название товара
+product = ''
+
 url_reg = slugify(region)
-product = 'фен'
 name = []
 price = []
 link = []
@@ -63,7 +66,7 @@ link = []
 
 main(product, url_reg)
 
-
+# Формирование документа csv формата с результатами поиска
 with open('avito.csv', 'w') as f:
     writer = csv.writer(f)
     for i in range(1, len(name)):
