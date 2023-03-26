@@ -69,10 +69,9 @@ main(product, url_reg)
 # Формирование документа csv формата с результатами поиска
 with open('avito.csv', 'w') as f:
     writer = csv.writer(f)
-    for i in range(1, len(name)):
-        writer.writerow(name[i])
-        writer.writerow(price[i])
-        writer.writerow(link[i])
+    writer.writerow(name)
+    writer.writerow(price)
+    writer.writerow(link)
 
 
 
