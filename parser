@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 from transliterate import slugify
-import csv
 
 
 # Функция возвращает html-код страниц
